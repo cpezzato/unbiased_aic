@@ -22,13 +22,13 @@ int main(int argc, char **argv)
   std::vector<double> desiredPos1(7);
 
   // Set desired position to be achieved at the start, without having any goal from a publisher
-  desiredPos1[0] = -0.214;
-  desiredPos1[1] = -0.349;
-  desiredPos1[2] = -0.035;
-  desiredPos1[3] = -2.126;
-  desiredPos1[4] = 0.061;
-  desiredPos1[5] = 1.466;
-  desiredPos1[6] = 0.455;
+  desiredPos1[0] = 0;
+  desiredPos1[1] = -0.4;
+  desiredPos1[2] = 0;
+  desiredPos1[3] = -2;
+  desiredPos1[4] = 0;
+  desiredPos1[5] = 1.5;
+  desiredPos1[6] = 0.5;
 
   // Object of the class uAIC which will take care of everything
   uAIC uAIC_controller(robot);

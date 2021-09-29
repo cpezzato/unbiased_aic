@@ -21,13 +21,13 @@
       sensorSub = nh.subscribe("/joint_states", 1, &uAIC::jointStatesCallback, this);
 
       // Listener to goals
-      // TODO change to listener according to MAX output
-      goal_mu_dSub = nh.subscribe("/GoalPositions", 5, &uAIC::setGoalMuDCallback, this);
+      goal_mu_dSub = nh.subscribe("/desired_state", 5, &uAIC::setGoalMuDCallback, this);
 
 
   }
   uAIC::~uAIC(){}
 
+  // TODO change to reference.msg
   // Method to set the current goal from topic, this is the input to the controller
   void uAIC::setGoalMuDCallback(const std_msgs::Float64MultiArray::ConstPtr& msg){
     for( int i = 0; i < 7; i++ ) {
@@ -80,8 +80,8 @@
     // Controller values, diagonal elements of the gain matrices for the PID like control law
     k_p = 10;
     k_d = 5;
-    k_i = 0;
-    I_gain <<  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+    k_i = 0.001;
+    I_gain <<  0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02;
 
     // Learning rates for the gradient descent (found that a ratio of 60 works good)
     k_mu = 11.67;
@@ -169,7 +169,7 @@
   void uAIC::setGoal(std::vector<double> desiredPos){
     for(int i=0; i<desiredPos.size(); i++){
       mu_d(i) = desiredPos[i];
-      mu_p_d(i) = 0.0;
+      mu_p_d(i) = 0;
     }
   }
 
