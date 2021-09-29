@@ -13,33 +13,18 @@
 
   // Constructor which takes as argument the publishers and initialises the private ones in the class
   uAIC::uAIC(int whichRobot){
-
-      // Torque publishers
-      tauPub1 = nh.advertise<std_msgs::Float64>("/panda_joint1_controller/command", 20);
-      tauPub2 = nh.advertise<std_msgs::Float64>("/panda_joint2_controller/command", 20);
-      tauPub3 = nh.advertise<std_msgs::Float64>("/panda_joint3_controller/command", 20);
-      tauPub4 = nh.advertise<std_msgs::Float64>("/panda_joint4_controller/command", 20);
-      tauPub5 = nh.advertise<std_msgs::Float64>("/panda_joint5_controller/command", 20);
-      tauPub6 = nh.advertise<std_msgs::Float64>("/panda_joint6_controller/command", 20);
-      tauPub7 = nh.advertise<std_msgs::Float64>("/panda_joint7_controller/command", 20);
-
+    // Initialize the variables for thr uAIC
+    uAIC::initVariables();
+      // Torque publisher
+      torque_pub = nh.advertise<std_msgs::Float64MultiArray>("/joint_torques_des", 20);
       // Listener joint states
       sensorSub = nh.subscribe("/joint_states", 1, &uAIC::jointStatesCallback, this);
 
       // Listener to goals
+      // TODO change to listener according to MAX output
       goal_mu_dSub = nh.subscribe("/GoalPositions", 5, &uAIC::setGoalMuDCallback, this);
 
-      // Publisher for the free-energy and sensory prediction errors
-      //IFE_pub = nh.advertise<std_msgs::Float64>("panda_free_energy", 10);
-      //SPE_pub = nh.advertise<std_msgs::Float64MultiArray>("panda_SPE", 10);
 
-      // Publishers for beliefs
-      //beliefs_mu_pub = nh.advertise<std_msgs::Float64MultiArray>("beliefs_mu", 10);
-      //beliefs_mu_p_pub = nh.advertise<std_msgs::Float64MultiArray>("beliefs_mu_p", 10);
-      //beliefs_mu_pp_pub = nh.advertise<std_msgs::Float64MultiArray>("beliefs_mu_pp", 10);
-
-    // Initialize the variables for thr uAIC
-    uAIC::initVariables();
   }
   uAIC::~uAIC(){}
 
@@ -93,8 +78,8 @@
     var_qdot = 1;
 
     // Controller values, diagonal elements of the gain matrices for the PID like control law
-    k_p = 25;
-    k_d = 10;
+    k_p = 10;
+    k_d = 5;
     k_i = 0;
     I_gain <<  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
 
@@ -114,6 +99,11 @@
       K_i(i,i) = k_i;
     }
 
+    // Last joint
+    K_p(6,6) = 0.3*k_p;
+    K_d(6,6) = 0.3*k_d;
+    K_i(6,6) = 0.3*k_i;
+
     // Initialize control actions
     u << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
 
@@ -122,29 +112,12 @@
 
     // Integration step
     h = 0.001;
+    // Resize the data for the published message
+    torque_command.data.resize(7);
 
-    // Resize Float64MultiArray messages
-    // uAIC_mu.data.resize(7);
-    // uAIC_mu_p.data.resize(7);
-    // uAIC_mu_pp.data.resize(7);
-    // SPE.data.resize(2);
   }
 
   void uAIC::minimiseF(){
-
-    // Compute single sensory prediction errors
-    //SPEq = (jointPos.transpose()-mu.transpose())*SigmaP_yq0*(jointPos-mu);
-    //SPEdq = (jointVel.transpose()-mu_p.transpose())*SigmaP_yq1*(jointVel-mu_p);
-    //SPEmu_p = (mu_p.transpose()+mu.transpose()-mu_d.transpose())*SigmaP_mu*(mu_p+mu-mu_d);
-    //SPEmu_pp = (mu_pp.transpose()+mu_p.transpose())*SigmaP_muprime*(mu_pp+mu_p);
-
-    // Free-energy as a sum of squared values (i.e. sum the SPE)
-    // F.data = SPEq + SPEdq + SPEmu_p + SPEmu_pp;
-
-    // AIC: Free-energy minimization using gradient descent and beliefs update
-    //mu_dot = mu_p - k_mu*(-SigmaP_yq0*(jointPos-mu)+SigmaP_mu*(mu_p+mu-mu_d));
-    //mu_dot_p = mu_pp - k_mu*(-SigmaP_yq1*(jointVel-mu_p)+SigmaP_mu*(mu_p+mu-mu_d)+SigmaP_muprime*(mu_pp+mu_p));
-    //mu_dot_pp = - k_mu*(SigmaP_muprime*(mu_pp+mu_p));
 
     // Unbiased uAIC
     mu_dot = - k_mu*(-SigmaP_yq0*(jointPos-mu) + SigmaP_mu*(mu - (mu_past + h*mu_p_past)));
@@ -164,27 +137,7 @@
 
     // Calculate and send control actions
     uAIC::computeActions();
-    
-    // Publish beliefs as Float64MultiArray
-    // for (int i=0;i<7;i++){
-    //    uAIC_mu.data[i] = mu(i);
-    //    uAIC_mu_p.data[i] = mu_p(i);
-    //    //uAIC_mu_pp.data[i] = mu_pp(i);
-    // }
-    // Define SPE message
-    //SPE.data[0] = SPEq;
-    //SPE.data[1] = SPEdq;
 
-    // Publish free-energy
-    //IFE_pub.publish(F);
-
-    // Sensory prediction error publisher
-    //SPE_pub.publish(SPE);
-
-    // Publish beliefs
-    // beliefs_mu_pub.publish(uAIC_mu);
-    // beliefs_mu_p_pub.publish(uAIC_mu_p);
-    // beliefs_mu_pp_pub.publish(uAIC_mu_pp);
   }
 
   void   uAIC::computeActions(){
@@ -195,12 +148,12 @@
     u = K_p*(mu_d-mu) + K_d*(mu_p_d-mu_p) + K_i*(I_gain);
 
     // Set the toques from u and publish
-    tau1.data = u(0); tau2.data = u(1); tau3.data = u(2); tau4.data = u(3);
-    tau5.data = u(4); tau6.data = u(5); tau7.data = u(6);
+    for (int i=0;i<7;i++){
+       torque_command.data[i] = u(i);
+    }
+
     // Publishing
-    tauPub1.publish(tau1); tauPub2.publish(tau2); tauPub3.publish(tau3);
-    tauPub4.publish(tau4); tauPub5.publish(tau5); tauPub6.publish(tau6);
-    tauPub7.publish(tau7);
+    torque_pub.publish(torque_command);
   }
 
   // Method to control if the joint states have been received already,
