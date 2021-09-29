@@ -4,7 +4,7 @@
  *
  * Created on Sept. 28th, 2021
  *
- * Class to perform active inference control 
+ * Class to perform active inference control
  *
  */
 
@@ -74,7 +74,7 @@ private:
   // ROS related Variables, node handle
   ros::NodeHandle nh;
   // Publishers for joint torques to the topics /panda_joint*_controller/command, and the free-energy
-  ros::Publisher tauPub1, tauPub2, tauPub3, tauPub4, tauPub5, tauPub6, tauPub7, IFE_pub;
+  ros::Publisher tauPub1, tauPub2, tauPub3, tauPub4, tauPub5, tauPub6, tauPub7, IFE_pub, torque_pub;
   // Subscriber for proprioceptive sensors (i.e. from joint_states) and camera (i.e. aruco_single/pose)
   ros::Subscriber sensorSub;
   // Support variables to contain the torques for the joints
@@ -84,7 +84,7 @@ private:
   Eigen::Matrix<double, 4, 4> DH_T, DH_A, T;
   Eigen::Matrix<double, 3, 1> eePosition;
   // Definition of variables in order to publish the beliefs about the states and the sensory prediction errors
-  std_msgs::Float64MultiArray uAIC_mu, uAIC_mu_p, uAIC_mu_pp, SPE;
+  std_msgs::Float64MultiArray uAIC_mu, uAIC_mu_p, uAIC_mu_pp, SPE, torque_command;
   // Publishers for beliefs
   ros::Publisher beliefs_mu_pub, beliefs_mu_p_pub, beliefs_mu_pp_pub, SPE_pub;
   // Getting goal
