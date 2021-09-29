@@ -11,7 +11,22 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   std_msgs
   geometry_msgs
+  message_generation
 )
+
+
+#Add to message files
+add_message_files(
+      FILES
+      reference.msg
+    )
+
+#Add to message generator
+ generate_messages(
+   DEPENDENCIES
+   std_msgs
+ )
+
 
 ###################################
 ## catkin specific configuration ##
@@ -22,7 +37,9 @@ catkin_package( CATKIN_DEPENDS
 	rospy
 	sensor_msgs
 	std_msgs
-  geometry_msgs
+        geometry_msgs
+        message_generation
+	message_runtime
 )
 
 ###########

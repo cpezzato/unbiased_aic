@@ -1,0 +1,2 @@
+std_msgs/Float64MultiArray ref_position
+std_msgs/Float64MultiArray ref_velocity
