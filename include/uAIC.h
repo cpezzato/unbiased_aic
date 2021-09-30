@@ -19,6 +19,7 @@
 #include "std_msgs/Float64.h"
 #include "std_msgs/Float64MultiArray.h"
 #include "geometry_msgs/PoseStamped.h"
+#include "unbiased_aic/reference.h"
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Dense>
 #include <iostream>
@@ -44,10 +45,11 @@ public:
   int dataReady();
   // Set desired position
   void setGoal(std::vector<double> desiredPos);
+  void setGoalCurrentState();
   // get methods for sensory prediction errors
   std_msgs::Float64MultiArray getSPE();
   // Getting trajectory
-  void setGoalMuDCallback(const std_msgs::Float64MultiArray::ConstPtr& msg);
+  void setDesiredState(const unbiased_aic::reference::ConstPtr& msg);
 
 private:
 

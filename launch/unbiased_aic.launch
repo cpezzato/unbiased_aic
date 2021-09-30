@@ -2,5 +2,5 @@
 <launch>
     <!-- Launch robot control node, either AIC or MRAC, comment accordingly-->
     <node pkg="unbiased_aic" type="unbiased_aic_uAIC" name="unbiased_aic_uAIC" />
-
+    <rosparam command="load" file="$(find unbiased_aic)/config/uAIC_tuning.yaml" />
 </launch>

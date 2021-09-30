@@ -21,7 +21,7 @@
       sensorSub = nh.subscribe("/joint_states", 1, &uAIC::jointStatesCallback, this);
 
       // Listener to goals
-      goal_mu_dSub = nh.subscribe("/desired_state", 5, &uAIC::setGoalMuDCallback, this);
+      goal_mu_dSub = nh.subscribe("/desired_state", 5, &uAIC::setDesiredState, this);
 
 
   }
@@ -29,10 +29,11 @@
 
   // TODO change to reference.msg
   // Method to set the current goal from topic, this is the input to the controller
-  void uAIC::setGoalMuDCallback(const std_msgs::Float64MultiArray::ConstPtr& msg){
+  void uAIC::setDesiredState(const unbiased_aic::reference::ConstPtr& msg){
     for( int i = 0; i < 7; i++ ) {
-      mu_d(i) = msg->data[i];
-      mu_p_d(i) = 0.0;
+      mu_d(i) = msg->ref_position.data[i];
+      mu_p_d(i) = msg->ref_velocity.data[i];
+      // mu_p_d(i) = 0.0;
     }
   }
 
@@ -72,19 +73,22 @@
     // Begin Tuning parameters of u-AIC
     //---------------------------------------------------------------
     // Variances associated with the beliefs and the sensory inputs
-    var_mu = 5.0;
-    var_muprime = 10.0;
-    var_q = 1;
-    var_qdot = 1;
+    ROS_INFO("Setting parameters from parameter space");
+    nh.getParam("var_mu", var_mu);
+    nh.getParam("var_muprime", var_muprime);
+    nh.getParam("var_q", var_q);
+    nh.getParam("var_qdot", var_qdot);
 
     // Controller values, diagonal elements of the gain matrices for the PID like control law
-    k_p = 10;
-    k_d = 5;
-    k_i = 0.001;
+    nh.getParam("k_p", k_p);
+    nh.getParam("k_d", k_d);
+    nh.getParam("k_i", k_i);
+    nh.getParam("k_mu", k_mu);
+
     I_gain <<  0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02;
 
     // Learning rates for the gradient descent (found that a ratio of 60 works good)
-    k_mu = 11.67;
+
     // End tuning parameters
     //---------------------------------------------------------------
 
@@ -170,6 +174,14 @@
     for(int i=0; i<desiredPos.size(); i++){
       mu_d(i) = desiredPos[i];
       mu_p_d(i) = 0;
+    }
+  }
+
+  void uAIC::setGoalCurrentState(){
+    for(int i=0; i<7; i++){
+      mu_d(i) = jointPos(i);
+      mu_p_d(i) = 0;
+//      std::cout << jointPos(i) << "\n";
     }
   }
 
