@@ -16,9 +16,9 @@
     // Initialize the variables for thr uAIC
     uAIC::initVariables();
       // Torque publisher
-      torque_pub = nh.advertise<std_msgs::Float64MultiArray>("/joint_torques_des", 20);
+      torque_pub = nh.advertise<std_msgs::Float64MultiArray>("/panda_joint_effort_controller/command", 20);
       // Listener joint states
-      sensorSub = nh.subscribe("/joint_states", 1, &uAIC::jointStatesCallback, this);
+      sensorSub = nh.subscribe("/franka_state_controller/joint_states", 1, &uAIC::jointStatesCallback, this);
 
       // Listener to goals
       goal_mu_dSub = nh.subscribe("/desired_state", 5, &uAIC::setDesiredState, this);
@@ -27,11 +27,11 @@
   }
   uAIC::~uAIC(){}
 
-  // TODO change to reference.msg
   // Method to set the current goal from topic, this is the input to the controller
   void uAIC::setDesiredState(const unbiased_aic::reference::ConstPtr& msg){
     for( int i = 0; i < 7; i++ ) {
       mu_d(i) = msg->ref_position.data[i];
+      mu_d(i) = jointPos(i);
       mu_p_d(i) = msg->ref_velocity.data[i];
       // mu_p_d(i) = 0.0;
     }
@@ -84,6 +84,7 @@
     nh.getParam("k_d", k_d);
     nh.getParam("k_i", k_i);
     nh.getParam("k_mu", k_mu);
+    nh.getParam("k_a", k_a);
 
     I_gain <<  0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02;
 
@@ -94,14 +95,23 @@
 
     // Populate matrices
     for( int i = 0; i < SigmaP_yq0.rows(); i = i + 1 ) {
-      SigmaP_yq0(i,i) = 1/var_q;
-      SigmaP_yq1(i,i) = 1/var_qdot;
-      SigmaP_mu(i,i) = 1/var_mu;
-      SigmaP_muprime(i,i) = 1/var_muprime;
-      K_p(i,i) = k_p;
-      K_d(i,i) = k_d;
-      K_i(i,i) = k_i;
+        SigmaP_yq0(i,i) = 1/var_q;
+        SigmaP_yq1(i,i) = 1/var_qdot;
+        SigmaP_mu(i,i) = 1/var_mu;
+        SigmaP_muprime(i,i) = 1/var_muprime;
+        K_p(i,i) = k_p;
+        K_d(i,i) = k_d;
+        K_i(i,i) = k_i;
     }
+
+    SigmaP_yq0(4,4) = 0.1*1/var_q;
+    SigmaP_yq1(4,4) = 0.1*1/var_qdot;
+
+    SigmaP_yq0(5,5) = 0.05*1/var_q;
+    SigmaP_yq1(5,5) = 0.05*1/var_qdot;
+
+    SigmaP_yq0(6,6) = 0.01*1/var_q;
+    SigmaP_yq1(6,6) = 0.01*1/var_qdot;
 
     // Last joint
     K_p(6,6) = 0.3*k_p;
@@ -123,7 +133,7 @@
 
   void uAIC::minimiseF(){
 
-    // Unbiased uAIC
+    /////////// Unbiased uAIC //////////
     mu_dot = - k_mu*(-SigmaP_yq0*(jointPos-mu) + SigmaP_mu*(mu - (mu_past + h*mu_p_past)));
     mu_dot_p = - k_mu*(-SigmaP_yq1*(jointVel-mu_p) + SigmaP_muprime*(mu_p-mu_p_past));
 
@@ -135,12 +145,35 @@
     mu = mu + h*mu_dot;             // Belief about the position
     mu_p = mu_p + h*mu_dot_p;       // Belief about motion of mu
     // mu_pp = mu_pp + h*mu_dot_pp;    // Belief about motion of mu'
-
+    
     // Set curret values for next ieration
     I_gain = I_gain + mu_d-mu;
 
     // Calculate and send control actions
     uAIC::computeActions();
+    /////////////////////////////////////////
+
+    /////////// Active inference ///////////
+    // Belief update
+    // mu_dot = mu_p - k_mu*(-SigmaP_yq0*(jointPos-mu)+SigmaP_mu*(mu_p+mu-mu_d));
+    // mu_dot_p = mu_pp - k_mu*(-SigmaP_yq1*(jointVel-mu_p)+SigmaP_mu*(mu_p+mu-mu_d)+SigmaP_muprime*(mu_pp+mu_p));
+    // mu_dot_pp = - k_mu*(SigmaP_muprime*(mu_pp+mu_p));
+    //
+    // mu = mu + h*mu_dot;             // Belief about the position
+    // mu_p = mu_p + h*mu_dot_p;       // Belief about motion of mu
+    // mu_pp = mu_pp + h*mu_dot_pp;    // Belief about motion of mu'
+    //
+    // // Compute control actions
+    // u = u-h*k_a*(SigmaP_yq1*(jointVel-mu_p)); //+SigmaP_yq0*(jointPos-mu));
+    //
+    // // Set the toques from u and publish
+    // for (int i=0;i<7;i++){
+    //    torque_command.data[i] = u(i);
+    // }
+
+    // Publishing
+    torque_pub.publish(torque_command);
+    /////////////////////////////////////////////
 
   }
 

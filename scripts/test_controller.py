@@ -2,6 +2,7 @@
 
 import rospy
 import numpy as np
+import time
 
 from unbiased_aic.msg import reference
 
@@ -16,7 +17,7 @@ class TestController(object):
         )
         self._action_msg = reference()
         self._action_msg.ref_position.data = np.array([0.5, 0.1, 0.0, -1.501, 0.0, 1.8675, 0.0])
-        self._action_msg.ref_velocity.data = np.array([-0.15, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+        self._action_msg.ref_velocity.data = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
     def run(self):
         t = 0.0

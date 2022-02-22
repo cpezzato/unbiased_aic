@@ -1,10 +1,11 @@
-var_mu: 5.0
-var_muprime: 10.0
+var_mu: 15.0
+var_muprime: 30.0
 var_q: 1
 var_qdot: 1
 
+k_a: 200
 
 k_p : 0
-k_d : 30
+k_d : 10
 k_i : 0.000
-k_mu : 11.67
+k_mu : 11.6
