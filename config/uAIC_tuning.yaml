@@ -5,7 +5,9 @@ var_qdot: 1
 
 k_a: 200
 
-k_p : 0
+k_p : 30
 k_d : 10
 k_i : 0.000
 k_mu : 11.6
+
+max_i : 0.3

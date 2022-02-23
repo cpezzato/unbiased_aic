@@ -85,7 +85,7 @@
     nh.getParam("k_i", k_i);
     nh.getParam("k_mu", k_mu);
     nh.getParam("k_a", k_a);
-
+    nh.getParam("max_i", max_i);
     I_gain <<  0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02;
 
     // Learning rates for the gradient descent (found that a ratio of 60 works good)
@@ -114,9 +114,11 @@
     SigmaP_yq1(6,6) = 0.01*1/var_qdot;
 
     // Last joint
-    K_p(6,6) = 0.3*k_p;
-    K_d(6,6) = 0.3*k_d;
-    K_i(6,6) = 0.3*k_i;
+    K_p(4,4) = 0.3*k_p;
+    K_p(5,5) = 0.15*k_p;
+    K_p(6,6) = 0.1*k_p;
+    //K_d(6,6) = 0.3*k_d;
+    K_i(6,6) = 0.1*k_i;
 
     // Initialize control actions
     u << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
@@ -148,7 +150,12 @@
     
     // Set curret values for next ieration
     I_gain = I_gain + mu_d-mu;
-
+    // Satruration of integral action
+    for(int j = 0; j<7; j++){
+    	if(I_gain(j)>max_i){
+	   I_gain(j) = max_i;
+    	}
+    }
     // Calculate and send control actions
     uAIC::computeActions();
     /////////////////////////////////////////
@@ -172,7 +179,7 @@
     // }
 
     // Publishing
-    torque_pub.publish(torque_command);
+    //torque_pub.publish(torque_command);
     /////////////////////////////////////////////
 
   }

@@ -33,7 +33,7 @@ int main(int argc, char **argv)
   // Object of the class uAIC which will take care of everything
   uAIC uAIC_controller(robot);
   // Set desired position in the uAIC class
-  //uAIC_controller.setGoal(desiredPos1);
+  uAIC_controller.setGoal(desiredPos1);
   // Set the current joint position as goal for the robot to keep it
   // Main loop
   ros::Rate rate(1000);
@@ -45,13 +45,13 @@ int main(int argc, char **argv)
     rate.sleep();
   }
 
-  uAIC_controller.setGoalCurrentState();
+//uAIC_controller.setGoalCurrentState();
 
   while (ros::ok()){
     // Manage all the callbacks and so read sensors
     ros::spinOnce();
     if ((count!=0)&&(uAIC_controller.dataReady()==1)){
-      uAIC_controller.minimiseF();
+	    uAIC_controller.minimiseF();
     }
     else
       count ++;
