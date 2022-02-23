@@ -1,11 +1,11 @@
-is_unbiased : 1
+is_unbiased : 0
 
-var_mu: 1
-var_muprime: 1
+var_mu: 20.0
+var_muprime: 30.0
 var_q: 1
 var_qdot: 1
-k_a: 200
 
+k_a: 600
 k_d : 30
 
 k_i : 0.01

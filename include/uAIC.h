@@ -66,17 +66,17 @@ private:
   // Control actions,  column vector of 7 elements, and integral gain
   Eigen::Matrix<double, 7, 1> u, I_gain;
   // Parameters for control law, to populate the gain matrices
-  double  k_p, k_d, k_i, max_i;
+  double  k_p, k_d, k_i, max_i, k_p0, k_p1, k_p2, k_p3, k_p4, k_p5, k_p6;
   // Learning rates and integration step for the uAIC
   double k_mu, k_a, h;
   // Sensory prediction errors
   double SPEq, SPEdq, SPEmu_p, SPEmu_pp;
   // Support variable to control the flow of the script
-  int dataReceived;
+  int dataReceived, is_unbiased;
   // ROS related Variables, node handle
   ros::NodeHandle nh;
   // Publishers for joint torques to the topics /panda_joint*_controller/command, and the free-energy
-  ros::Publisher tauPub1, tauPub2, tauPub3, tauPub4, tauPub5, tauPub6, tauPub7, IFE_pub, torque_pub;
+  ros::Publisher torque_pub, beliefs_mu_p_pub, beliefs_mu_pub;
   // Subscriber for proprioceptive sensors (i.e. from joint_states) and camera (i.e. aruco_single/pose)
   ros::Subscriber sensorSub;
   // Support variables to contain the torques for the joints
@@ -86,9 +86,7 @@ private:
   Eigen::Matrix<double, 4, 4> DH_T, DH_A, T;
   Eigen::Matrix<double, 3, 1> eePosition;
   // Definition of variables in order to publish the beliefs about the states and the sensory prediction errors
-  std_msgs::Float64MultiArray uAIC_mu, uAIC_mu_p, uAIC_mu_pp, SPE, torque_command;
-  // Publishers for beliefs
-  ros::Publisher beliefs_mu_pub, beliefs_mu_p_pub, beliefs_mu_pp_pub, SPE_pub;
+  std_msgs::Float64MultiArray uAIC_mu, uAIC_mu_p, uAIC_mu_pp, SPE, torque_command, beliefs_mu_data, beliefs_mu_p_data;
   // Getting goal
   ros::Subscriber goal_mu_dSub;
 };

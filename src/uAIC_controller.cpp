@@ -28,7 +28,7 @@ int main(int argc, char **argv)
   desiredPos1[3] = -2;
   desiredPos1[4] = 0;
   desiredPos1[5] = 1.5;
-  desiredPos1[6] = 0.5;
+  desiredPos1[6] = 0.0;
 
   // Object of the class uAIC which will take care of everything
   uAIC uAIC_controller(robot);
