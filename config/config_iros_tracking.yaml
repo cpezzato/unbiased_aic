@@ -1,4 +1,4 @@
-is_unbiased : 0
+is_unbiased : 1
 
 var_mu: 10.0
 var_muprime: 20.0
@@ -16,7 +16,7 @@ k_p1 : 35
 k_p2 : 35
 k_p3 : 15
 k_p4 : 15
-k_p5 : 4
+k_p5 : 4 
 k_p6 : 10
 
 max_i : 200

@@ -1,7 +1,7 @@
 is_unbiased : 1
 
-var_mu: 1
-var_muprime: 1
+var_mu: 10
+var_muprime: 20
 var_q: 1
 var_qdot: 1
 k_a: 200
@@ -17,6 +17,6 @@ k_p2 : 35
 k_p3 : 15
 k_p4 : 15
 k_p5 : 12
-k_p6 : 10
+k_p6 : 2
 
 max_i : 200

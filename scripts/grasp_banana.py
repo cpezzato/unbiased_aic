@@ -4,7 +4,7 @@ import rospy
 import actionlib
 import numpy as np
 import time
-from franka_gripper.msg import MoveAction, MoveGoal
+from franka_gripper.msg import MoveAction, MoveGoal, GraspAction, GraspGoal
 from unbiased_aic.msg import reference
 
 class TestController(object):
@@ -29,19 +29,19 @@ class TestController(object):
         t = 0.0
         while not rospy.is_shutdown():
             if t > 0.0 and t < 2.0:
-                self._action_msg.ref_position.data = np.array([-0.0, -0.917, -0.0, -2.619, 0.0349, 1.719, -0.0])
+                self._action_msg.ref_position.data = np.array([-0.0, -0.4, -0.0, -2, 0.0, 1.5, -0.0])
                 self._action_msg.ref_velocity.data = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-            if t > 2.0 and t < 6.0:
-                self._action_msg.ref_position.data = np.array([0.431, -0.126, 0.0516, -2.537, -0.0196, 2.425, -0.0])
+            if t > 2.0 and t < 8.0:
+                self._action_msg.ref_position.data = np.array([-0.005562202513847279, 0.08350535817522751, 0.01295866326151187, -2.6517260061230576, -0.0036131685750793595, 2.6451942547162375, 0.9056253972195016])
                 self._action_msg.ref_velocity.data = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-            if t > 6.0 and t < 10.0:
-                self._action_msg.ref_position.data = np.array([0.353, 0.266, 0.0417, -2.594, 0.0314, 2.895, -0.0]) 
+            if t > 8.0:
+		self.goal.width = 0.005
+                self.goal.speed = 0.03
+		self.client.send_goal(self.goal)
+		# Waits for the server to finish performing the action.
+	    if t > 11.0:
+            	self._action_msg.ref_position.data = np.array([-0.0, -0.4, -0.0, -2, 0.0, 1.5, 0.9056253972195016])
                 self._action_msg.ref_velocity.data = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-            if t > 10.0 and t < 12.0:
-                self._action_msg.ref_position.data = np.array([0.431, -0.126, 0.0516, -2.537, -0.0196, 2.425, -0.0])
-                self._action_msg.ref_velocity.data = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-            if t > 12.0:
-                t =0   
             t += 0.01
             self._action_pub.publish(self._action_msg)
             self._rate.sleep()
@@ -67,8 +67,8 @@ class TestController(object):
 if __name__ == "__main__":
     myTestController = TestController()
     try:
-        # myTestController.run()
-        myTestController.gripper_control("grasp")
+        myTestController.gripper_control("release")
+        myTestController.run()
         #myTestController.test_pose()
     except rospy.ROSInterruptException:
         pass
