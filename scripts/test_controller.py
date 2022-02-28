@@ -21,7 +21,7 @@ class TestController(object):
 
     def run(self):
         t = 0.0
-        a = 0.7
+        a = 0.3
         w = 1
         while not rospy.is_shutdown():
             t += 0.01
@@ -29,6 +29,10 @@ class TestController(object):
             v0 = - a * w * np.sin(w * t)
             self._action_msg.ref_position.data[0] = p0
             self._action_msg.ref_velocity.data[0] = v0
+            self._action_msg.ref_position.data[1] = p0
+            self._action_msg.ref_velocity.data[1] = v0
+            self._action_msg.ref_position.data[2] = p0
+            self._action_msg.ref_velocity.data[2] = v0
             self._action_pub.publish(self._action_msg)
             self._rate.sleep()
 
