@@ -1,5 +1,7 @@
 # Unbiased active inference for torque control
 
+![Alt Text](docs/panda_banana.gif)
+
 This package contains implementations of the active inference controller (AIC) from [1] and the unbiased active inference controller. The controllers are designed and tuned for satisfactory behavior of a Franka Emika Panda. 
 
 ### Pre-requisites 
@@ -39,4 +41,3 @@ rosrun unbiased_aic $test_controller.py$
 
 You can write your own examples in Python following the examples in ````/scripts````. The tuning of the controllers can be done in the ````.yaml```` files in the ````\config```` folder. 
 
-![Alt Text](docs/panda_banana.gif)
