@@ -39,4 +39,4 @@ rosrun unbiased_aic $test_controller.py$
 
 You can write your own examples in Python following the examples in ````/scripts````. The tuning of the controllers can be done in the ````.yaml```` files in the ````\config```` folder. 
 
-
+![Alt Text](docs/panda_banana.gif)
