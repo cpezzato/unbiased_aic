@@ -5,7 +5,7 @@ import numpy as np
 import time
 
 from unbiased_aic.msg import reference
-
+from sensor_msgs.msg import JointState
 
 class TestController(object):
     def __init__(self):
@@ -13,11 +13,11 @@ class TestController(object):
         self._rate = rospy.Rate(100)
         self._action_pub = rospy.Publisher(
             '/desired_state', 
-            reference, queue_size=10
+            JointState, queue_size=10
         )
-        self._action_msg = reference()
-        self._action_msg.ref_position.data = np.array([0.5, 0.1, 0.0, -1.501, 0.0, 1.8675, 0.0])
-        self._action_msg.ref_velocity.data = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+        self._action_msg = JointState()
+        self._action_msg.position = [0.5, 0.1, 0.0, -1.501, 0.0, 1.8675, 0.0]
+        self._action_msg.velocity = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
     def run(self):
         t = 0.0
@@ -27,8 +27,8 @@ class TestController(object):
             t += 0.01
             p0 = a * np.cos(w * t)
             v0 = - a * w * np.sin(w * t)
-            self._action_msg.ref_position.data[0] = p0
-            self._action_msg.ref_velocity.data[0] = v0
+            self._action_msg.position[0] = p0
+            self._action_msg.velocity[0] = v0
             self._action_pub.publish(self._action_msg)
             self._rate.sleep()
 

@@ -26,16 +26,15 @@
       // Listener to goals
       goal_mu_dSub = nh.subscribe("/desired_state", 5, &uAIC::setDesiredState, this);
 
-
   }
   uAIC::~uAIC(){}
 
   // Method to set the current goal from topic, this is the input to the controller
-  void uAIC::setDesiredState(const unbiased_aic::reference::ConstPtr& msg){
+  void uAIC::setDesiredState(const sensor_msgs::JointState::ConstPtr& msg){
     for( int i = 0; i < 7; i++ ) {
-      mu_d(i) = msg->ref_position.data[i];
-      //mu_d(i) = jointPos(i);
-      mu_p_d(i) = msg->ref_velocity.data[i];
+      //mu_d(i) = msg->ref_position.data[i];
+      mu_d(i) = jointPos(i);
+      mu_p_d(i) = msg->velocity[i];
       // mu_p_d(i) = 0.0;
     }
   }

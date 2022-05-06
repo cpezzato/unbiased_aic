@@ -49,7 +49,8 @@ public:
   // get methods for sensory prediction errors
   std_msgs::Float64MultiArray getSPE();
   // Getting trajectory
-  void setDesiredState(const unbiased_aic::reference::ConstPtr& msg);
+  //void setDesiredState(const unbiased_aic::reference::ConstPtr& msg);
+  void setDesiredState(const sensor_msgs::JointState::ConstPtr& msg);
 
 private:
 
