@@ -1,0 +1,22 @@
+is_unbiased : 1
+
+var_mu: 10.0
+var_muprime: 20.0
+var_q: 1
+var_qdot: 1
+
+k_a: 400
+
+k_d : 30
+k_i : 0.01
+k_mu : 51.6
+
+k_p0 : 55
+k_p1 : 35
+k_p2 : 35
+k_p3 : 15
+k_p4 : 15
+k_p5 : 4 
+k_p6 : 10
+
+max_i : 200

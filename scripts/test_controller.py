@@ -21,8 +21,8 @@ class TestController(object):
 
     def run(self):
         t = 0.0
-        a = 0.3
-        w = 1
+        a = 0.8
+        w = 1 
         while not rospy.is_shutdown():
             t += 0.01
             p0 = a * np.cos(w * t)
