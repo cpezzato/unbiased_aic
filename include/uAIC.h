@@ -67,7 +67,7 @@ private:
   // Control actions,  column vector of 7 elements, and integral gain
   Eigen::Matrix<double, 7, 1> u, I_gain;
   // Parameters for control law, to populate the gain matrices
-  double  k_p, k_d, k_i, max_i, k_p0, k_p1, k_p2, k_p3, k_p4, k_p5, k_p6;
+  double  k_p, k_d, k_i, max_i, k_p0, k_p1, k_p2, k_p3, k_p4, k_p5, k_p6, k_d0, k_d1, k_d2, k_d3, k_d4, k_d5, k_d6;
   // Learning rates and integration step for the uAIC
   double k_mu, k_a, h;
   // Sensory prediction errors

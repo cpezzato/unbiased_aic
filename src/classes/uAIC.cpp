@@ -33,8 +33,9 @@
   void uAIC::setDesiredState(const sensor_msgs::JointState::ConstPtr& msg){
     for( int i = 0; i < 7; i++ ) {
       //mu_d(i) = msg->ref_position.data[i];
-      mu_d(i) = jointPos(i);
+      // mu_d(i) = jointPos(i);
       mu_p_d(i) = msg->velocity[i];
+      mu_d(i) = jointPos(i) + mu_p_d(i)*h;
       // mu_p_d(i) = 0.0;
     }
   }
@@ -91,6 +92,13 @@
     nh.getParam("k_p5", k_p5);
     nh.getParam("k_p6", k_p6);
     nh.getParam("k_d", k_d);
+    nh.getParam("k_d0", k_d0);
+    nh.getParam("k_d1", k_d1);
+    nh.getParam("k_d2", k_d2);
+    nh.getParam("k_d3", k_d3);
+    nh.getParam("k_d4", k_d4);
+    nh.getParam("k_d5", k_d5);
+    nh.getParam("k_d6", k_d6);
     nh.getParam("k_i", k_i);
     nh.getParam("k_mu", k_mu);
     nh.getParam("k_a", k_a);
@@ -109,7 +117,7 @@
         SigmaP_mu(i,i) = 1/var_mu;
         SigmaP_muprime(i,i) = 1/var_muprime;
         //K_p(i,i) = k_p;
-        K_d(i,i) = k_d;
+        //K_d(i,i) = k_d;
         K_i(i,i) = k_i;
     }
 
@@ -133,9 +141,13 @@
     K_p(4,4) = k_p4;
     K_p(5,5) = k_p5;
     K_p(6,6) = k_p6;
-    K_d(5,5) = 10; 
-    K_i(5,5) = k_i;
-    K_i(6,6) = k_i;
+    K_d(0,0) = k_d0;
+    K_d(1,1) = k_d1; 
+    K_d(2,2) = k_d2;
+    K_d(3,3) = k_d3;    
+    K_d(4,4) = k_d4;  
+    K_d(5,5) = k_d5; 
+    K_d(6,6) = k_d6;
 
     // Initialize control actions
     u << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
@@ -219,7 +231,7 @@
 
     // Set the toques from u and publish
     for (int i=0;i<7;i++){
-       torque_command.data[i] = u(i);
+	torque_command.data[i] = u(i);
     }
 
     // Publishing
