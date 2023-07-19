@@ -4,11 +4,16 @@
 
 This package contains implementations of the active inference controller (AIC) from [1] and the unbiased active inference controller. The controllers are designed and tuned for satisfactory behavior of a Franka Emika Panda. 
 
+### How to cite this work
+If you found this repository useful, please consider citing the associated paper below:
+
+- *Unbiased Active Inference for Classical Control*. Baioumy, M., Pezzato, C., Ferrari, R., & Hawes, N. IROS 2022.
+
 ### Pre-requisites 
 This package relies on joint states readings and torque commands for the Panda arm. Provided a goal through the ````/desired_state topic```` as a ````JointState```` message type, the active inference controllers compute the required torques and publish them to the topic ````/panda_joint_effort_controller/command````. Thus two requirements:
 
 1. Franka ROS is installed and configured
-2. A high frequency torque interface is available such that the published torques by the active inference are forwarded to the joints
+2. A high-frequency torque interface is available such that the published torques by the active inference are forwarded to the joints
 
 ## How to install
 Simply clone this repository and build it in your workspace.
