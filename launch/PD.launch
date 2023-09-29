@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+    <!-- Launch robot control node with PID -->
+    <node pkg="unbiased_aic" type="PD_controller" name="PD_controller" />
+    <!-- <rosparam command="load" file="$(find unbiased_aic)/config/config_iros_tracking.yaml" /> -->
+</launch>
