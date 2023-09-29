@@ -68,7 +68,7 @@ void PD::initVariables(){
 
   // Initialize parameters to default 
   K_p = kDefaultStiffness.asDiagonal();
-  K_p = kDefaultDamping.asDiagonal();
+  K_d = kDefaultDamping.asDiagonal();
   K_i = kDefaultI.asDiagonal();
   filter_coeff_ = kDefaultFilterCoeff;
 
@@ -98,7 +98,7 @@ void PD::control(){
   vel_error_cum += vel_error;
   vel_error_cum = vel_error_cum.cwiseMax(vel_error_cum_min_).cwiseMin(vel_error_cum_max_);
   
-  u << K_p * vel_error + K_i * vel_error_cum - K_d * dq_filtered;
+  u << K_p * vel_error + K_i * vel_error_cum // - K_d * dq_filtered;
 
   // Set the toques from u and publish
   for (int i=0;i<7;i++){
