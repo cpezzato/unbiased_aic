@@ -37,8 +37,8 @@ catkin_package( CATKIN_DEPENDS
 	rospy
 	sensor_msgs
 	std_msgs
-        geometry_msgs
-        message_generation
+  geometry_msgs
+  message_generation
 	message_runtime
 )
 
@@ -55,6 +55,7 @@ include_directories(
 ## Declare a C++ library
 add_library(${PROJECT_NAME}
   src/classes/uAIC.cpp
+  src/classes/PD.cpp
 )
 
 
@@ -62,7 +63,8 @@ add_library(${PROJECT_NAME}
 
 add_executable(${PROJECT_NAME}_uAIC src/uAIC_controller.cpp)
 add_dependencies(${PROJECT_NAME}_uAIC ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(${PROJECT_NAME}_uAIC
-   ${catkin_LIBRARIES} ${PROJECT_NAME}
-)
+target_link_libraries(${PROJECT_NAME}_uAIC ${catkin_LIBRARIES} ${PROJECT_NAME})
 
+add_executable(${PROJECT_NAME}_PD src/PD_controller.cpp)
+add_dependencies(${PROJECT_NAME}_PD ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${PROJECT_NAME}_PD ${catkin_LIBRARIES} ${PROJECT_NAME})
