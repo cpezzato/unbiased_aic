@@ -46,9 +46,9 @@ PD::PD(){
 PD::~PD(){}
 
 // Method to set the current goal from topic, this is the input to the controller
-void PD::setDesiredVel(const sensor_msgs::JointState::ConstPtr& msg){
+void PD::setDesiredVel(const std_msgs::Float64MultiArray::ConstPtr& msg){
   for( int i = 0; i < 7; i++ ) {
-    dq_d(i) = msg->velocity[i];
+    dq_d(i) = msg->data[i];
   }
 }
 

@@ -81,7 +81,7 @@ public:
   int dataReady();
   void setGoalCurrentState();
   // Getting trajectory
-  void setDesiredVel(const sensor_msgs::JointState::ConstPtr& msg);
+  void setDesiredVel(const std_msgs::Float64MultiArray::ConstPtr& msg);
 
 private:
 

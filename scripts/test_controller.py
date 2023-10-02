@@ -12,7 +12,7 @@ class TestController(object):
         rospy.init_node('test_aic_controller_node')
         self._rate = rospy.Rate(100)
         self._action_pub = rospy.Publisher(
-            '/desired_state', 
+            '/desired_vel', 
             JointState, queue_size=10
         )
         self._action_msg = JointState()
