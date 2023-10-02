@@ -35,6 +35,7 @@ PD::PD(){
   PD::initVariables();
     // Torque publisher
     torque_pub = nh.advertise<std_msgs::Float64MultiArray>("/panda_joint_effort_controller/command", 20);
+    filter_pub = nh.advertise<std_msgs::Float64MultiArray>("/filtered_state", 20);
     // Listener joint states
     sensorSub = nh.subscribe("/franka_state_controller/joint_states", 1, &PD::jointStatesCallback, this);
 
@@ -77,7 +78,9 @@ void PD::initVariables(){
 
   // Support variable
   dataReceived = 0;
-
+    for (int i = 0; i < K_p.rows(); ++i) {
+        std::cout << "K_p(" << i << "," << i << ") = " << K_p.diagonal()[i] << std::endl;
+    }
   // nh.getParam("max_i", max_i);
 
   // Initialize control actions
@@ -87,6 +90,7 @@ void PD::initVariables(){
   h = 0.001;
   // Resize the data for the published message
   torque_command.data.resize(7);
+  filtered_vel.data.resize(7);
 }
 
 // PD control
@@ -98,15 +102,17 @@ void PD::control(){
   vel_error_cum += vel_error;
   vel_error_cum = vel_error_cum.cwiseMax(vel_error_cum_min_).cwiseMin(vel_error_cum_max_);
   
-  u << K_p * vel_error + K_i * vel_error_cum // - K_d * dq_filtered;
+  u << 0.1*K_p * vel_error; // + K_i * vel_error_cum; // - K_d * dq_filtered;
 
   // Set the toques from u and publish
   for (int i=0;i<7;i++){
     torque_command.data[i] = u(i);
+    filtered_vel.data[i] = dq_filtered(i);
   }
 
   // Publishing
-  torque_pub.publish(torque_command);
+  //torque_pub.publish(torque_command);
+  filter_pub.publish(filtered_vel);
 }
 
 // Method to control if the joint states have been received already,

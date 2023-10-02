@@ -101,10 +101,11 @@ private:
   ros::NodeHandle nh;
   // Publishers for joint torques to the topics /panda_joint*_controller/command, and the free-energy
   ros::Publisher torque_pub;
+  ros::Publisher filter_pub;
   // Subscriber for proprioceptive sensors (i.e. from joint_states) and camera (i.e. aruco_single/pose)
   ros::Subscriber sensorSub;
   // Definition of variables in order to publish torques
-  std_msgs::Float64MultiArray torque_command;
+  std_msgs::Float64MultiArray torque_command, filtered_vel;
   // Getting goal
   ros::Subscriber goal_vel_sub;
 };
