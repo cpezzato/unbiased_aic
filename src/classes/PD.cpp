@@ -18,7 +18,7 @@ const Eigen::Matrix<double, 7, 1> PD::kDefaultStiffness =
 const double kDefaultDampingData[7] = {50, 50, 50, 20, 20, 20, 10};
 const Eigen::Matrix<double, 7, 1> PD::kDefaultDamping = Eigen::Matrix<double, 7, 1>(kDefaultDampingData);
 
-const double PD::kDefaultFilterCoeff = 0.5;
+const double PD::kDefaultFilterCoeff = 0.2;
 
 const double kDefaultIData[7] = {5, 5, 5, 2, 2, 2, 1};
 const Eigen::Matrix<double, 7, 1> PD::kDefaultI = Eigen::Matrix<double, 7, 1>(kDefaultIData);
@@ -77,10 +77,6 @@ void PD::initVariables(){
   vel_error_cum_min_ = velErrorCumMinDefault;
 
   // Support variable
-  dataReceived = 0;
-    for (int i = 0; i < K_p.rows(); ++i) {
-        std::cout << "K_p(" << i << "," << i << ") = " << K_p.diagonal()[i] << std::endl;
-    }
   // nh.getParam("max_i", max_i);
 
   // Initialize control actions
@@ -96,7 +92,7 @@ void PD::initVariables(){
 // PD control
 void PD::control(){
   // Update filter
-  dq_filtered = ema_filter(dq_filtered, jointVel, filter_coeff_, true);
+  dq_filtered = ema_filter(dq_filtered, jointVel, filter_coeff_, false);
 
   vel_error = (dq_d - dq_filtered);
   vel_error_cum += vel_error;
